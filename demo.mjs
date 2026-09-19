@@ -74,7 +74,7 @@ export function demoState(CFG = {}) {
       id: 'demo:' + key, key, kind: 'staff', tool, dept, team, role, task: key.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), desc,
       schedule, enabled: status !== 'paused', lastRun: now - (status === 'working' ? 30e3 : status === 'idle' ? 4 * 60e3 : (i + 1) * 5 * 3600e3),
       nextRun: status === 'paused' ? null : now + (i + 1) * 3.4 * 3600e3, runs: 3 + (i % 5), status,
-      activity: status === 'working' ? (i === 0 ? 'Briefing helpers: competitor research' : 'Editing index.html') : status === 'waiting' ? 'Needs approval: Running: git push origin main' : status === 'paused' ? 'On leave (paused)' : status === 'idle' ? 'Done — task complete' : 'Asleep until next shift',
+      activity: status === 'working' ? (i === 0 ? 'Briefing helpers: competitor research' : 'Editing index.html') : status === 'waiting' ? 'Needs approval: Running: git push origin main' : status === 'paused' ? 'On leave (paused)' : status === 'idle' ? 'Done - task complete' : 'Asleep until next shift',
       session: { title: key, project: 'demo-project', cwd: '~/demo-project', model: tool === 'codex' ? 'gpt-5' : 'opus-5', sid: 'demo-' + key, lastActive: now },
       feed: status === 'sleeping' || status === 'paused' ? feed.slice(0, 3) : feed,
       helpers: i === 0 ? [{ id: 'h1', task: 'Pull the top 10 results for the topic' }, { id: 'h2', task: 'Summarise last week’s analytics' }] : [],

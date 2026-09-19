@@ -133,6 +133,12 @@ body.far .podtag{display:block}
 .ctrl button.on{background:var(--lime);color:#111}
 #demoBtn{font-size:14px;min-width:34px}
 .ctrl .lbl{font-size:11.5px;color:var(--muted);padding:0 4px 0 8px}
+.ctrl.links a{display:flex;align-items:center;height:30px;padding:0 10px;border-radius:9px;color:var(--ink);text-decoration:none;font-weight:600;font-size:13px}
+.ctrl.links a:hover{background:rgba(255,255,255,.08)}
+.ctrl.links a:last-child{color:#ff9ec0}
+.built{position:fixed;right:16px;top:58px;z-index:5;font-size:11.5px;color:var(--muted);text-decoration:none}
+.built:hover{color:var(--ink)}
+body.clean #hud,body.clean #ticker,body.clean .hint,body.clean .built{display:none}
 #banner{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:6px 14px;border-radius:99px;font-weight:700;font-size:12.5px;display:none;z-index:5;white-space:nowrap}
 #banner.show{display:block}
 #banner.demo{background:var(--lime);color:#111}
@@ -220,8 +226,10 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px}
   <div class="spacer"></div>
   <div class="ctrl pane"><span class="lbl">Group by</span><button data-group="team" class="on">Team</button><button data-group="dept">Dept</button><button data-group="tool">Tool</button></div>
   <div class="ctrl pane"><button id="zout" title="Zoom out">−</button><button id="zin" title="Zoom in">+</button></div>
+  <div class="ctrl pane links"><a href="https://github.com/IshanVats-6/virtual-agents-office" target="_blank" rel="noreferrer" title="Star the project on GitHub">★ Star</a><a href="https://github.com/sponsors/IshanVats-6" target="_blank" rel="noreferrer" title="Sponsor the project">♥ Sponsor</a></div>
 </div>
 <div id="banner"></div>
+<a class="built" href="https://ivconsulting.in/?source=virtual-agents-office" target="_blank" rel="noreferrer">built by IV Consulting</a>
 
 <aside id="dir" class="pane">
   <div class="hd"><h4 style="margin:0">Team directory</h4><button id="dirClose" style="all:unset;cursor:pointer;color:var(--muted);font-size:20px">×</button></div>
@@ -230,7 +238,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px}
 </aside>
 
 <div id="ticker" class="pane"><h4 id="tickHead">Live activity <span id="tickArrow">▸</span></h4><div id="evs"></div></div>
-<div class="hint">Scroll to zoom · drag to pan · click anyone<br><kbd>T</kbd> team · <kbd>1</kbd>–<kbd>9</kbd> jump to pod · <kbd>0</kbd> fit · <kbd>Esc</kbd> close</div>
+<div class="hint">Scroll to zoom · drag to pan · click anyone<br><kbd>T</kbd> team · <kbd>1</kbd>-<kbd>9</kbd> jump to pod · <kbd>0</kbd> fit · <kbd>Esc</kbd> close</div>
 
 <aside id="drawer"><button class="x" id="closeDrawer">×</button><div id="dBody"></div></aside>
 
@@ -255,12 +263,12 @@ function planeMatrix(x0, y, zTop, w, h, pxW, pxH) {
   return `matrix(${(w * C / pxW).toFixed(5)},${(w * S / pxW).toFixed(5)},0,${(h * T / pxH).toFixed(5)},${ex.toFixed(1)},${ey.toFixed(1)})`;
 }
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const ago = (ms) => { if (!ms) return '—'; const s = Math.max(0, (Date.now() - ms) / 1000); return s < 60 ? Math.round(s) + 's' : s < 3600 ? Math.round(s / 60) + 'm' : s < 86400 ? Math.round(s / 3600) + 'h' : Math.round(s / 86400) + 'd'; };
+const ago = (ms) => { if (!ms) return '-'; const s = Math.max(0, (Date.now() - ms) / 1000); return s < 60 ? Math.round(s) + 's' : s < 3600 ? Math.round(s / 60) + 'm' : s < 86400 ? Math.round(s / 3600) + 'h' : Math.round(s / 86400) + 'd'; };
 const until = (ms) => { if (!ms) return ''; const s = (ms - Date.now()) / 1000; if (s < 3600) return Math.max(1, Math.round(s / 60)) + 'm'; if (s < 86400) return Math.round(s / 3600) + 'h'; return Math.round(s / 86400) + 'd'; };
-const whenStr = (ms) => ms ? new Date(ms).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
-const dur = (ms) => !ms || ms < 0 ? '—' : ms < 60e3 ? Math.round(ms / 1000) + 's' : ms < 3600e3 ? Math.round(ms / 60e3) + 'm' : (ms / 3600e3).toFixed(1) + 'h';
-const money = (v) => v == null ? '—' : v >= 100 ? '$' + Math.round(v) : '$' + v.toFixed(2);
-const num = (v) => v == null ? '—' : v >= 1e9 ? (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(1) + 'K' : String(Math.round(v));
+const whenStr = (ms) => ms ? new Date(ms).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+const dur = (ms) => !ms || ms < 0 ? '-' : ms < 60e3 ? Math.round(ms / 1000) + 's' : ms < 3600e3 ? Math.round(ms / 60e3) + 'm' : (ms / 3600e3).toFixed(1) + 'h';
+const money = (v) => v == null ? '-' : v >= 100 ? '$' + Math.round(v) : '$' + v.toFixed(2);
+const num = (v) => v == null ? '-' : v >= 1e9 ? (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(1) + 'K' : String(Math.round(v));
 const pretty = (t) => /^[a-z0-9-]+$/.test(t || '') ? t.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ') : t;
 const ICON = { prompt: '›', tool: '⚙', say: '✦', result: '↳', error: '✗', think: '…' };
 const LOGO = (x, y, s) => `<g transform="translate(${x},${y}) scale(${s})"><path d="M50,6 L92,30 L50,54 L8,30 Z" fill="#C9EF52"/><path d="M8,30 L50,54 L50,94 L8,70 Z" fill="#5B8DEF"/><path d="M92,30 L92,70 L50,94 L50,54 Z" fill="#2F3B66"/></g>`;
@@ -644,7 +652,7 @@ function updateDesk(rec, e) {
     return;
   }
   const lines = e.feed.slice(-8).map((x) => `<div class="ln ${x.k}">${ICON[x.k] || '·'} ${esc(x.x)}</div>`).join('');
-  rec.mon.innerHTML = `<div class="bar"><i></i><i></i><i></i><span>${esc(e.session?.project || e.tool)} — ${esc(e.session?.model || '')}</span></div>
+  rec.mon.innerHTML = `<div class="bar"><i></i><i></i><i></i><span>${esc(e.session?.project || e.tool)} - ${esc(e.session?.model || '')}</span></div>
     <div class="ttl">${esc(pretty(e.task))}</div><div class="lines">${lines}${st === 'working' ? '<div class="ln"><span class="caret"></span></div>' : ''}</div>
     <div class="st"><span>● ${st === 'waiting' ? 'NEEDS YOU' : st.toUpperCase()}</span><em>${ago(e.lastRun)} ago</em></div>`;
 }
@@ -691,9 +699,9 @@ function tick(now) {
     }
     if (!w.path.length && w.onArrive) { const f = w.onArrive; w.onArrive = null; f(); }
   }
-  requestAnimationFrame(tick);
+  raf = requestAnimationFrame(tick);
 }
-requestAnimationFrame(tick);
+let raf = requestAnimationFrame(tick);
 
 const roomUse = new Map(), breakUse = new Map();
 function desiredPlace(e) {
@@ -824,12 +832,13 @@ function render(st) {
   if (!st || !st.staff?.length) return;
   STATE = DEMO ? applyDemo(st) : st;
   document.getElementById('company').textContent = STATE.company;
+  const first = firstRender;
   let instant = firstRender;
-  if (!LAYOUT || LAYOUT.sig !== layoutSig()) { rebuild(); if (firstRender) fit(false); instant = true; }
+  if (!LAYOUT || LAYOUT.sig !== layoutSig()) { rebuild(); if (first) fit(false); instant = true; }
   for (const e of STATE.staff) updateDesk(people.get(e.id), e);
   syncMovement(instant);
   for (const e of STATE.staff) updateDesk(people.get(e.id), e);
-  firstRender = false;
+  if (firstRender) { firstRender = false; setTimeout(applyViewParams, 60); }
   updateSigns(); updateStats(); updateTicker(); updateDirectory(); updateBanner();
   if (drawerId === '__company') fillCompany(); else if (drawerId) fillDrawer(STATE.staff.find((e) => e.id === drawerId));
 }
@@ -859,7 +868,7 @@ function updateTicker() {
 function updateBanner() {
   const b = document.getElementById('banner'), stale = STATE.syncedAt && Date.now() - STATE.syncedAt > 90e3;
   document.getElementById('live').classList.toggle('stale', !!stale);
-  if (STATE.demo && !DEMO) { b.className = 'show demo'; b.textContent = 'Demo office — no agents found on this machine yet. Run a Claude Code or Codex session and it fills in automatically.'; return; }
+  if (STATE.demo && !DEMO) { b.className = 'show demo'; b.textContent = 'Demo office - no agents found on this machine yet. Run a Claude Code or Codex session and it fills in automatically.'; return; }
   if (DEMO) { b.className = 'show demo'; b.textContent = 'Simulation mode: staged activity, not live data · press ⏸ to return to live'; }
   else if (stale) { b.className = 'show stale'; b.textContent = `Mac offline or asleep · showing the last update from ${ago(STATE.syncedAt)} ago`; }
   else b.className = '';
@@ -913,11 +922,11 @@ function fillDrawer(e) {
   if (!e) return;
   const col = colorOf(e), s = e.stats || {}, days = STATE.analyticsDays || 30;
   const nowTxt = e.status === 'sleeping' ? (e.nextRun ? `Asleep · next shift ${whenStr(e.nextRun)} (in ${until(e.nextRun)})` : 'Asleep · on standby') : e.status === 'paused' ? 'On leave · this schedule is paused' : e.status === 'idle' ? 'Just finished · on a coffee break' : e.activity;
-  const rate = s.successRate == null ? '—' : Math.round(s.successRate * 100) + '%';
+  const rate = s.successRate == null ? '-' : Math.round(s.successRate * 100) + '%';
   const W = s.work || {};
   const work = [['📝', 'Files edited', W.files], ['🚀', 'Commits & pushes', W.git], ['🗂️', 'Notion updates', W.notion], ['✉️', 'Emails & drafts', W.email], ['🌐', 'Web research', W.web], ['⌨️', 'Commands run', W.cmds], ['🤝', 'Helpers briefed', W.helpers], ['🔧', 'Tool calls', W.tools]];
   const useCost = s.cost != null;
-  const noTokens = e.tool === 'cowork' ? 'Cowork runs inside the desktop app’s sandbox, so cost and token data aren’t available for them.' : e.tool === 'openclaw' ? 'OpenClaw runs through your Codex subscription and codeburn doesn’t price those runs, so tokens are shown without a cost.' : '';
+  const noTokens = e.source === 'codeburn' ? `Read through codeburn, so you get cost, tokens and run history for ${STATE.tools[e.tool]?.label || e.tool} - but no live activity feed.` : e.tool === 'cowork' ? 'Cowork runs inside the desktop app’s sandbox, so cost and token data aren’t available for them.' : e.tool === 'openclaw' ? 'OpenClaw runs through your Codex subscription and codeburn doesn’t price those runs, so tokens are shown without a cost.' : '';
   document.getElementById('drawer').style.setProperty('--tc', col);
   document.getElementById('dBody').innerHTML = `
   <div class="sec">
@@ -935,7 +944,7 @@ function fillDrawer(e) {
       <div class="kpi"><b>${money(s.cost)}</b><span>spend</span></div>
       <div class="kpi"><b>${num(s.tokens)}</b><span>tokens</span></div>
       <div class="kpi"><b>${dur(s.avgMs)}</b><span>typical run</span></div>
-      <div class="kpi"><b>${s.cacheHit == null ? '—' : Math.round(s.cacheHit * 100) + '%'}</b><span>cache hit</span></div>
+      <div class="kpi"><b>${s.cacheHit == null ? '-' : Math.round(s.cacheHit * 100) + '%'}</b><span>cache hit</span></div>
     </div>
     ${noTokens ? `<p class="note" style="margin:10px 0 0">${noTokens}</p>` : ''}
   </div>
@@ -979,8 +988,8 @@ function fillCompany() {
     <div class="kpi"><b>${num(t.tokens)}</b><span>tokens</span></div>
     <div class="kpi"><b>${num(t.sessions)}</b><span>sessions</span></div>
     <div class="kpi"><b>${runs}</b><span>staff runs</span></div>
-    <div class="kpi ${runs && fails / runs > .1 ? 'bad' : 'good'}"><b>${runs ? Math.round((1 - fails / runs) * 100) + '%' : '—'}</b><span>success rate</span></div>
-    <div class="kpi"><b>${runs ? money(staff.reduce((a, e) => a + (e.stats?.cost || 0), 0) / runs) : '—'}</b><span>per staff run</span></div></div>
+    <div class="kpi ${runs && fails / runs > .1 ? 'bad' : 'good'}"><b>${runs ? Math.round((1 - fails / runs) * 100) + '%' : '-'}</b><span>success rate</span></div>
+    <div class="kpi"><b>${runs ? money(staff.reduce((a, e) => a + (e.stats?.cost || 0), 0) / runs) : '-'}</b><span>per staff run</span></div></div>
     <p class="note" style="margin:10px 0 0">Total spend covers every AI session on the Mac (codeburn); staff figures cover scheduled agents only.</p></div>
   ${attention.length ? `<div class="sec"><h5><span>Needs your attention</span></h5>${attention.map((e) => row(e, e.status === 'waiting' ? 'needs you' : '⚠ failed')).join('')}</div>` : ''}
   <div class="sec"><h5><span>Spend by team</span></h5>${byTeam.map((b) => `<div class="w" style="margin-bottom:6px;position:relative;overflow:hidden"><span style="position:absolute;inset:0 auto 0 0;width:${(b.cost / maxCost) * 100}%;background:${b.z.color};opacity:.22"></span><span style="position:relative">${esc(b.z.label)}</span><b style="position:relative">${money(b.cost)}</b><span style="position:relative;color:var(--muted);font-size:11px;width:60px;text-align:right">${b.runs} runs</span></div>`).join('')}</div>
@@ -1059,7 +1068,7 @@ function applyDemo(st) {
   work(pick(0), 'Briefing helpers: competitor research', { helpers: [{ id: 'd1', task: 'Pull top-10 SERP pages for the topic' }, { id: 'd2', task: 'Summarise GSC impressions by page' }] });
   work(pick(1), 'Using skill codex · second opinion', { reach: 'codex' });
   work(pick(2), 'Editing blog/ai-agents-pricing.html');
-  Object.assign(pick(3), { status: 'idle', activity: 'Done — task complete', lastRun: now - 60e3 });
+  Object.assign(pick(3), { status: 'idle', activity: 'Done - task complete', lastRun: now - 60e3 });
   Object.assign(pick(4), { status: 'waiting', activity: 'Needs approval: Running: git push origin main' });
   const h = s.staff.find((e) => e.tool === 'hermes'); if (h) work(h, 'Replying in chat', { reach: 'openclaw' });
   return s;
@@ -1074,9 +1083,27 @@ setInterval(() => { if (DEMO) { DEMO.seed = (DEMO.seed + 3) % 97; render(LIVE); 
 
 document.getElementById('tickHead').onclick = () => { const t = document.getElementById('ticker'); t.classList.toggle('open'); document.getElementById('tickArrow').textContent = t.classList.contains('open') ? '▾' : '▸'; };
 
+// ================= view links: ?focus=2&zoom=1.1&agent=<id>&panel=company&clean=1 =================
+function applyViewParams() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('clean') === '1') document.body.classList.add('clean');
+  if (q.get('panel') === 'company') openCompany();
+  const agent = q.get('agent');
+  if (agent) { const e = STATE.staff.find((x) => x.id === agent || x.name.toLowerCase() === agent.toLowerCase()); if (e) openDrawer(e.id); }
+  const focus = q.get('focus');
+  if (focus !== null && LAYOUT.zones[+focus]) focusZone(LAYOUT.zones[+focus]);
+  const zoom = parseFloat(q.get('zoom'));
+  if (zoom) setTimeout(() => { const cx = parseFloat(q.get('x')), cy = parseFloat(q.get('y')); if (!isNaN(cx) && !isNaN(cy)) { const [wx, wy] = P(cx, cy, 1); Pan.x = innerWidth / 2 - wx * zoom; Pan.y = innerHeight / 2 - wy * zoom; } Pan.s = zoom; apply(); }, 700);
+}
+
 // ================= live data =================
 setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
+const SNAP = new URLSearchParams(location.search).get('snap') === '1';
 function connect() {
+  if (SNAP) { // static snapshot: load once, stop animating, so headless screenshots can finish
+    fetch('/api/state').then((r) => r.json()).then((j) => { LIVE = j; render(j); setTimeout(() => { cancelAnimationFrame(raf); document.querySelectorAll('.zzz,.neon,.breathe,.hands,.wave,.stir,.steam,.caret').forEach((n) => (n.style.animation = 'none')); }, 900); });
+    return;
+  }
   const es = new EventSource('/api/stream');
   es.onmessage = (m) => { try { LIVE = JSON.parse(m.data); render(LIVE); } catch (err) { console.error(err); } };
   es.onerror = () => { es.close(); setTimeout(connect, 3000); };

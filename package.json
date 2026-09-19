@@ -1,7 +1,7 @@
 {
   "name": "virtual-agents-office",
   "version": "0.1.0",
-  "description": "A live isometric office for your AI coding agents. Every scheduled agent is an employee at a desk — working, asleep, or in a huddle — with cost and productivity scorecards. Reads your machine locally, no dependencies.",
+  "description": "A live isometric office for your AI coding agents. Every scheduled agent is an employee at a desk - working, asleep, or in a huddle - with cost and productivity scorecards. Reads your machine locally, no dependencies.",
   "type": "module",
   "bin": { "virtual-agents-office": "start.mjs" },
   "main": "server.mjs",

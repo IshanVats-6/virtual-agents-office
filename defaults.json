@@ -1,5 +1,5 @@
 {
-  "_": "Built-in defaults. Don't edit this file — copy config.example.json to config.json and override only what you need.",
+  "_": "Built-in defaults. Don't edit this file - copy config.example.json to config.json and override only what you need.",
   "company": "Agents office",
   "tagline": "agents that never clock out",
   "port": 4747,
@@ -77,6 +77,74 @@
     "hermes": {
       "label": "Hermes",
       "color": "#F2B53A"
+    },
+    "cursor": {
+      "label": "Cursor",
+      "color": "#7C9CFF"
+    },
+    "cursor agent": {
+      "label": "Cursor Agent",
+      "color": "#7C9CFF"
+    },
+    "copilot": {
+      "label": "GitHub Copilot",
+      "color": "#B1BAC4"
+    },
+    "gemini": {
+      "label": "Gemini CLI",
+      "color": "#8AB4F8"
+    },
+    "cline": {
+      "label": "Cline",
+      "color": "#6FD3C7"
+    },
+    "roo code": {
+      "label": "Roo Code",
+      "color": "#F0A6CA"
+    },
+    "zed": {
+      "label": "Zed",
+      "color": "#84A9FF"
+    },
+    "opencode": {
+      "label": "OpenCode",
+      "color": "#8FD98F"
+    },
+    "warp": {
+      "label": "Warp",
+      "color": "#01A0F0"
+    },
+    "kiro": {
+      "label": "Kiro",
+      "color": "#B9A6FF"
+    },
+    "droid": {
+      "label": "Droid",
+      "color": "#FFB86B"
+    },
+    "devin": {
+      "label": "Devin",
+      "color": "#7EE0C0"
+    },
+    "qwen": {
+      "label": "Qwen",
+      "color": "#FF8FA3"
+    },
+    "kimi": {
+      "label": "Kimi",
+      "color": "#79C0FF"
+    },
+    "goose": {
+      "label": "Goose",
+      "color": "#E3B341"
+    },
+    "crush": {
+      "label": "Crush",
+      "color": "#D2A8FF"
+    },
+    "antigravity": {
+      "label": "Antigravity",
+      "color": "#9AA7D0"
     }
   },
   "roles": [
@@ -334,5 +402,7 @@
     "sshKey": "~/.ssh/id_ed25519",
     "containerMatch": "hermes",
     "pollSeconds": 20
-  }
+  },
+  "bridgeOtherTools": true,
+  "maxBridged": 18
 }

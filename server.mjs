@@ -1,4 +1,4 @@
-// virtual-agents-office — a live isometric office for your AI coding agents.
+// virtual-agents-office - a live isometric office for your AI coding agents.
 // Staff = standing agents (scheduled tasks and automations). Contractors = ad-hoc interactive sessions.
 // Everything is read locally, read-only. No dependencies: `npx virtual-agents-office`.
 import http from 'node:http';
@@ -257,7 +257,7 @@ async function parseClaude(f, st, sid, dir) {
   const finished = lastStop === 'end_turn' && !pending;
   const waiting = !!pending && (pending.name === 'AskUserQuestion' || Date.now() - st.mtimeMs > 90e3);
   const lastTool = [...feed].reverse().find((e) => e.k === 'tool');
-  let activity = finished ? 'Done — task complete' : pending ? toolLabel(pending.name, pending.input) : lastTool?.x || 'Thinking…';
+  let activity = finished ? 'Done - task complete' : pending ? toolLabel(pending.name, pending.input) : lastTool?.x || 'Thinking…';
   if (waiting) activity = pending.name === 'AskUserQuestion' ? 'Has a question for you' : `Needs approval: ${toolLabel(pending.name, pending.input)}`;
   const project = base(cwd) || dir.replace(/^-Users-[^-]+-/, '');
   const lastSay = [...feed].reverse().find((e) => e.k === 'say');
@@ -322,7 +322,7 @@ async function parseCodex(f, st) {
   const lastTool = [...feed].reverse().find((e) => e.k === 'tool');
   return {
     tool: originator === 'openclaw' ? 'openclaw' : 'codex', sid, originator, title: clip(firstPrompt || base(cwd), 80), firstPrompt: firstPrompt.slice(0, 200),
-    project: base(cwd), cwd, model, activity: finished ? 'Done — task complete' : lastTool?.x || 'Thinking…',
+    project: base(cwd), cwd, model, activity: finished ? 'Done - task complete' : lastTool?.x || 'Thinking…',
     feed: feed.slice(-40), lastActive: Math.max(lastTs, st.mtimeMs), _s: { mtime: st.mtimeMs, finished, waiting: false },
   };
 }
@@ -372,7 +372,7 @@ async function collectCowork() {
         } catch { continue; }
       }
       const v = { ...hit.val, status: statusFrom(hit.val._s) };
-      if (v.status !== 'working') v.activity = 'Done — task complete';
+      if (v.status !== 'working') v.activity = 'Done - task complete';
       sessions.push(v);
     }
   }
@@ -422,7 +422,7 @@ function parseHermes({ s, m }) {
   const lastTool = [...feed].reverse().find((e) => e.k === 'tool');
   return {
     tool: 'hermes', sid: id, title: clip(title || 'Slack thread', 80), project: 'Slack · ' + source, cwd: 'VPS', model,
-    activity: finished ? 'Done — task complete' : lastTool?.x || 'Thinking…', feed: feed.slice(-40), lastActive: mtime,
+    activity: finished ? 'Done - task complete' : lastTool?.x || 'Thinking…', feed: feed.slice(-40), lastActive: mtime,
     _s: { mtime, finished, waiting: false },
   };
 }
@@ -445,6 +445,7 @@ function deptFor(title, key) {
   for (const [re, d] of CFG.deptKeywords || []) if (new RegExp(re).test(key)) return d;
   return CFG.defaultDepartment || 'Agents';
 }
+const BRIDGE_COLORS = ['#7C9CFF', '#F0A6CA', '#6FD3C7', '#FFB86B', '#B9A6FF', '#8FD98F', '#FF8FA3', '#79C0FF'];
 function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
 
 let openclawSeen = false;
@@ -537,6 +538,39 @@ function analyticsRuns(cwSessions) {
   return runs;
 }
 
+const NATIVE = new Set(['claude', 'codex', 'hermes', 'openclaw', 'cowork']);
+const projName = (p) => String(p || '').split(/[\\/]/).filter(Boolean).pop()?.replace(/^-+/, '') || 'workspace';
+// codeburn reports usage for ~36 coding agents. Anything we don't parse natively still gets a desk,
+// with cost/tokens/runs but no live activity feed.
+function bridgedStaff(cb) {
+  if (!CFG.bridgeOtherTools) return [];
+  const byKey = new Map();
+  for (const [sid, c] of Object.entries(cb)) {
+    const tool = String(c.provider || '').toLowerCase();
+    if (!tool || NATIVE.has(tool)) continue;
+    const key = tool + ':' + projName(c.project);
+    if (!byKey.has(key)) byKey.set(key, { tool, project: projName(c.project), runs: [] });
+    byKey.get(key).runs.push({ sid, start: c.start, end: c.end, tok: { in: c.in, out: c.out, cr: c.cr, cw: c.cw }, outcome: '', files: 0 });
+  }
+  return [...byKey.entries()]
+    .map(([key, g]) => ({ key, ...g, cost: g.runs.reduce((a, r) => a + (cb[r.sid]?.cost || 0), 0), last: Math.max(...g.runs.map((r) => r.end || r.start)) }))
+    .sort((a, b) => b.cost - a.cost).slice(0, CFG.maxBridged || 18)
+    .map((g) => {
+      const label = CFG.tools[g.tool]?.label || titleCase(g.tool);
+      const age = Date.now() - g.last;
+      const status = age < 10 * 60e3 ? 'working' : age < 45 * 60e3 ? 'idle' : 'sleeping';
+      return {
+        id: 'tool:' + g.key, key: g.key, kind: 'staff', tool: g.tool, dept: CFG.defaultDepartment || 'Agents', team: label,
+        role: `${label} agent`, task: g.project, desc: `Sessions in ${g.project}, read through codeburn.`, source: 'codeburn',
+        schedule: 'Ad-hoc sessions', enabled: true, lastRun: g.last, nextRun: null, runs: g.runs.length, status,
+        activity: status === 'working' ? `Working in ${g.project}` : status === 'idle' ? 'Just finished a session' : 'No session running',
+        session: { title: g.project, project: g.project, cwd: '', model: (cb[g.runs[0].sid]?.models || [])[0] || '', sid: g.runs[0].sid, lastActive: g.last },
+        feed: [], helpers: [], reach: null, online: null, failed: null,
+        stats: aggregate(g.runs, cb, CFG.analyticsDays || 30),
+      };
+    });
+}
+
 async function refresh() {
   const [claude, codexAll, cw] = await Promise.all([collectClaude().catch(() => []), collectCodex().catch(() => []), collectCowork().catch(() => ({ sessions: [], tasks: [] })), loadDeskTitles().catch(() => {})]);
   openclawSeen = codexAll.some((x) => x.tool === 'openclaw');
@@ -586,6 +620,8 @@ async function refresh() {
     if (e.stats?.recent) e.stats.recent = e.stats.recent.map((r) => ({ ...r, outcome: '', topFiles: [] }));
     if (e.session) e.session = { ...e.session, title: e.task };
   }
+  const bridged = bridgedStaff(cb);
+  staff.push(...bridged);
   assignNames(staff, CFG.names, 's:');
   assignNames(contractors, CFG.contractorNames, 'c:');
   for (const e of [...staff, ...contractors]) e.look = hash(e.id + 'look');
@@ -595,8 +631,9 @@ async function refresh() {
   const empty = !staff.length && !contractors.length;
   if (empty || DEMO_MODE) { STATE = { ...demoState(CFG), demo: true, at: Date.now(), syncedAt: Date.now() }; broadcast(); push(); return; }
   STATE = {
-    company: CFG.company, departments: CFG.departments, tools: CFG.tools, at: Date.now(), syncedAt: Date.now(),
+    company: CFG.company, departments: CFG.departments, at: Date.now(), syncedAt: Date.now(),
     tagline: CFG.tagline || 'agents that never clock out',
+    tools: { ...CFG.tools, ...Object.fromEntries([...new Set(staff.map((e) => e.tool))].filter((t) => !CFG.tools[t]).map((t) => [t, { label: titleCase(t), color: BRIDGE_COLORS[hash(t) % BRIDGE_COLORS.length] }])) },
     teams: Object.fromEntries([...(CFG.teams || []), CFG.contractorTeam || { name: 'Hot Desks', color: '#9AA7D0' }].map((t, i) => [t.name, { color: t.color, order: i }])),
     hermesNote: hermes.error ? 'remote: ' + hermes.error : hermes.at ? 'remote synced ' + Math.round((Date.now() - hermes.at) / 1000) + 's ago' : '',
     totals, analyticsDays: CFG.analyticsDays || 30,
@@ -672,7 +709,7 @@ http.createServer(async (req, res) => {
   throw e;
 }).listen(PORT, HOST, () => {
   const url = `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;
-  console.log(`\n  ${CFG.company || 'Virtual agents office'} — ${RELAY ? 'relay' : DEMO_MODE ? 'demo office' : 'reading this machine'}`);
+  console.log(`\n  ${CFG.company || 'Virtual agents office'} - ${RELAY ? 'relay' : DEMO_MODE ? 'demo office' : 'reading this machine'}`);
   console.log(`  ▸ ${url}${PUSH_URL ? `  (pushing to ${PUSH_URL})` : ''}\n`);
   if (process.send) process.send({ ready: true, url });
 });
