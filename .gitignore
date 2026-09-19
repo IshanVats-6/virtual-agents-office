@@ -1,0 +1,8 @@
+node_modules/
+.analytics-cache.json
+config.json
+config.local.json
+schedules.json
+.env
+.DS_Store
+*.log

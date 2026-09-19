@@ -1,0 +1,24 @@
+{
+  "//": "Copy to config.json and keep only the keys you want to change. Everything else falls back to defaults.json.",
+
+  "company": "Acme Labs",
+  "tagline": "agents that never clock out",
+  "port": 4747,
+
+  "//teams": "Optional. Without this, one pod per department. With it, agents are grouped into named pods by a regex on the task id.",
+  "teams": [
+    { "name": "Content Studio", "color": "#FF6B5E", "match": "blog|post|content|newsletter" },
+    { "name": "SEO Squad", "color": "#FF9F43", "match": "seo|backlink|index|sitemap" },
+    { "name": "Ops & Release", "color": "#4DA3FF", "match": "deploy|release|github|backup|sync" },
+    { "name": "Research Pod", "color": "#A77BFF", "match": "research|scrape|radar|discovery" }
+  ],
+
+  "//roles": "Optional. First keyword found in the task id wins; otherwise the task name is used as the job title.",
+  "roles": [["standup", "Scrum Facilitator"], ["changelog", "Release Notes Writer"]],
+
+  "//nameOverrides": "Pin a person's name by task id instead of letting it be assigned.",
+  "nameOverrides": { "daily-standup": "Ada" },
+
+  "//hermes": "Optional: read a Hermes agent over SSH (docker exec). Leave disabled unless you run one.",
+  "hermes": { "enabled": false, "sshTarget": "root@1.2.3.4", "sshKey": "~/.ssh/id_ed25519", "containerMatch": "hermes", "pollSeconds": 20 }
+}

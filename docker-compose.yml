@@ -1,0 +1,14 @@
+# Remote office (relay). Put it behind your own HTTPS proxy, then push to it from your machine:
+#   PUSH_URL=https://office.example.com/api/push PUSH_TOKEN=<same token> node server.mjs
+services:
+  office:
+    build: .
+    restart: unless-stopped
+    ports: ['4747:4747']
+    environment:
+      - OFFICE_USER=${OFFICE_USER:-me}
+      - OFFICE_PASSWORD=${OFFICE_PASSWORD:?set a login password}
+      - PUSH_TOKEN=${PUSH_TOKEN:?set a push token}
+    volumes: ['office-data:/data']
+volumes:
+  office-data:

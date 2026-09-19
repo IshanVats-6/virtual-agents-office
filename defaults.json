@@ -1,0 +1,338 @@
+{
+  "_": "Built-in defaults. Don't edit this file — copy config.example.json to config.json and override only what you need.",
+  "company": "Agents office",
+  "tagline": "agents that never clock out",
+  "port": 4747,
+  "contractorWindowHours": 24,
+  "maxContractors": 12,
+  "openclawPort": 18789,
+  "analyticsDays": 30,
+  "defaultDepartment": "Agents",
+  "teams": [],
+  "contractorTeam": {
+    "name": "Hot Desks",
+    "color": "#9AA7D0"
+  },
+  "departments": {
+    "Agents": {
+      "color": "#54A0FF",
+      "order": 1
+    },
+    "Marketing": {
+      "color": "#FF6B5E",
+      "order": 2
+    },
+    "Sales": {
+      "color": "#F7C548",
+      "order": 3
+    },
+    "Engineering": {
+      "color": "#1FB58F",
+      "order": 4
+    },
+    "Operations": {
+      "color": "#4DA3FF",
+      "order": 5
+    },
+    "People": {
+      "color": "#3CCB7F",
+      "order": 6
+    },
+    "Finance": {
+      "color": "#A77BFF",
+      "order": 7
+    },
+    "Research": {
+      "color": "#F368E0",
+      "order": 8
+    },
+    "Contractors": {
+      "color": "#9AA7D0",
+      "order": 20
+    }
+  },
+  "deptAliases": {
+    "Admin": "Operations",
+    "Ops": "Operations",
+    "HR": "People",
+    "Eng": "Engineering"
+  },
+  "tools": {
+    "claude": {
+      "label": "Claude Code",
+      "color": "#E07A52"
+    },
+    "cowork": {
+      "label": "Claude Cowork",
+      "color": "#B794F6"
+    },
+    "codex": {
+      "label": "Codex",
+      "color": "#1FB58F"
+    },
+    "openclaw": {
+      "label": "OpenClaw",
+      "color": "#E5484D"
+    },
+    "hermes": {
+      "label": "Hermes",
+      "color": "#F2B53A"
+    }
+  },
+  "roles": [
+    [
+      "blog",
+      "Content Writer"
+    ],
+    [
+      "post",
+      "Content Writer"
+    ],
+    [
+      "seo",
+      "SEO Specialist"
+    ],
+    [
+      "backlink",
+      "Link Builder"
+    ],
+    [
+      "index",
+      "Indexing Specialist"
+    ],
+    [
+      "social",
+      "Social Media Manager"
+    ],
+    [
+      "linkedin",
+      "Social Media Manager"
+    ],
+    [
+      "newsletter",
+      "Newsletter Editor"
+    ],
+    [
+      "invoice",
+      "Finance Assistant"
+    ],
+    [
+      "billing",
+      "Finance Assistant"
+    ],
+    [
+      "careers",
+      "Recruiting Coordinator"
+    ],
+    [
+      "hiring",
+      "Recruiting Coordinator"
+    ],
+    [
+      "content",
+      "Content Strategist"
+    ],
+    [
+      "email",
+      "Lifecycle Marketer"
+    ],
+    [
+      "outreach",
+      "Outreach Manager"
+    ],
+    [
+      "prospect",
+      "Sales Development Rep"
+    ],
+    [
+      "lead",
+      "Demand Gen Analyst"
+    ],
+    [
+      "report",
+      "Analyst"
+    ],
+    [
+      "analytics",
+      "Analytics Engineer"
+    ],
+    [
+      "audit",
+      "Auditor"
+    ],
+    [
+      "research",
+      "Researcher"
+    ],
+    [
+      "scrape",
+      "Data Collector"
+    ],
+    [
+      "crawl",
+      "Data Collector"
+    ],
+    [
+      "digest",
+      "Digest Writer"
+    ],
+    [
+      "summary",
+      "Digest Writer"
+    ],
+    [
+      "triage",
+      "Support Agent"
+    ],
+    [
+      "inbox",
+      "Support Agent"
+    ],
+    [
+      "support",
+      "Support Agent"
+    ],
+    [
+      "test",
+      "QA Engineer"
+    ],
+    [
+      "qa",
+      "QA Engineer"
+    ],
+    [
+      "lint",
+      "Code Janitor"
+    ],
+    [
+      "cleanup",
+      "Maintenance Engineer"
+    ],
+    [
+      "hygiene",
+      "Maintenance Engineer"
+    ],
+    [
+      "backup",
+      "Backup Operator"
+    ],
+    [
+      "deploy",
+      "Release Manager"
+    ],
+    [
+      "release",
+      "Release Manager"
+    ],
+    [
+      "github",
+      "Release Manager"
+    ],
+    [
+      "sync",
+      "Sync Operator"
+    ],
+    [
+      "monitor",
+      "Monitoring Agent"
+    ],
+    [
+      "watch",
+      "Monitoring Agent"
+    ],
+    [
+      "heartbeat",
+      "Monitoring Agent"
+    ]
+  ],
+  "deptKeywords": [
+    [
+      "prospect|outreach|sales|crm|pipeline",
+      "Sales"
+    ],
+    [
+      "career|hiring|recruit|people",
+      "People"
+    ],
+    [
+      "invoice|billing|finance|revenue|payment",
+      "Finance"
+    ],
+    [
+      "deploy|release|github|backup|infra|sync|test|qa|lint|cleanup",
+      "Engineering"
+    ],
+    [
+      "research|scrape|crawl|radar|discovery",
+      "Research"
+    ],
+    [
+      "seo|blog|content|social|linkedin|newsletter|email|marketing|backlink|index|campaign",
+      "Marketing"
+    ],
+    [
+      "monitor|watch|heartbeat|triage|inbox|support",
+      "Operations"
+    ]
+  ],
+  "names": [
+    "Maya",
+    "Arjun",
+    "Zoe",
+    "Kabir",
+    "Lena",
+    "Rohan",
+    "Isla",
+    "Dev",
+    "Aria",
+    "Neil",
+    "Tara",
+    "Omar",
+    "Leo",
+    "Nia",
+    "Sana",
+    "Theo",
+    "Mira",
+    "Elena",
+    "Kian",
+    "Ruby",
+    "Kai",
+    "Chloe",
+    "Rafael",
+    "Anika",
+    "Jonah",
+    "Freya",
+    "Samir",
+    "Hana",
+    "Luca",
+    "Noor",
+    "Ivan",
+    "Sofia",
+    "Milo",
+    "Yara",
+    "Ezra",
+    "Lina"
+  ],
+  "contractorNames": [
+    "Alex",
+    "Jordan",
+    "Sam",
+    "Riley",
+    "Casey",
+    "Morgan",
+    "Quinn",
+    "Avery",
+    "Rowan",
+    "Skyler",
+    "Reese",
+    "Emery"
+  ],
+  "nameOverrides": {},
+  "hermes": {
+    "enabled": false,
+    "sshTarget": "",
+    "sshKey": "~/.ssh/id_ed25519",
+    "containerMatch": "hermes",
+    "pollSeconds": 20
+  }
+}

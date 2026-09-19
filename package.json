@@ -1,0 +1,20 @@
+{
+  "name": "virtual-agents-office",
+  "version": "0.1.0",
+  "description": "A live isometric office for your AI coding agents. Every scheduled agent is an employee at a desk — working, asleep, or in a huddle — with cost and productivity scorecards. Reads your machine locally, no dependencies.",
+  "type": "module",
+  "bin": { "virtual-agents-office": "start.mjs" },
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node start.mjs",
+    "demo": "node start.mjs --demo",
+    "relay": "OFFICE_MODE=relay HOST=0.0.0.0 node server.mjs"
+  },
+  "files": ["start.mjs", "server.mjs", "analytics.mjs", "demo.mjs", "defaults.json", "config.example.json", "public", "docs", "README.md", "LICENSE"],
+  "keywords": ["ai-agents", "claude-code", "codex", "dashboard", "isometric", "observability", "token-usage", "agent-monitoring"],
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "repository": { "type": "git", "url": "git+https://github.com/IshanVats-6/virtual-agents-office.git" },
+  "bugs": { "url": "https://github.com/IshanVats-6/virtual-agents-office/issues" },
+  "homepage": "https://github.com/IshanVats-6/virtual-agents-office#readme"
+}
