@@ -97,7 +97,7 @@ Everything is read **locally and read-only**. Nothing is uploaded and there is n
 - **Scorecards:** runs, success rate, spend, tokens, typical run time, cache hit, a daily chart, work delivered (files edited, commits, Notion updates, email drafts, web research, commands, sub-agents briefed) and recent runs with the outcome of each.
 - **Receptionist:** click her for headcount, 30-day spend, spend by team, who needs attention and what runs next.
 
-Scroll to zoom, drag to pan, `T` for the team directory, `1`–`9` to jump to a pod, `▶` to stage a busy office.
+Scroll to zoom, drag to pan, `T` for the team directory, `1`-`9` to jump to a pod, `▶` to stage a busy office.
 
 ## How agents get names, roles and teams
 
