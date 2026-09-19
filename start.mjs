@@ -27,7 +27,15 @@ if (has('--help') || has('-h')) {
     --demo         show the demo office instead of reading this machine
     --no-open      don't open a browser
     --no-prompt    never ask about starring the repo
+    --label        let an AI CLI you already have name the roles, teams and departments
+    --label --print  print the labelling prompt instead of running a CLI
 `);
+  process.exit(0);
+}
+
+if (has('--label')) {
+  const { run } = await import('./label.mjs');
+  await run(argv);
   process.exit(0);
 }
 

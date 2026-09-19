@@ -6,3 +6,6 @@ schedules.json
 .env
 .DS_Store
 *.log
+
+# labels written by --label
+office.json

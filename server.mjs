@@ -66,8 +66,10 @@ async function readHeadText(file, bytes = 65536) {
 }
 const skillMeta = (file) => {
   try {
-    const t = fs.readFileSync(file, 'utf8').slice(0, 3000);
-    return { name: (t.match(/^name:\s*(.+)$/m) || [])[1]?.trim(), description: (t.match(/^description:\s*(.+)$/m) || [])[1]?.trim().replace(/^["']|["']$/g, '') };
+    const t = fs.readFileSync(file, 'utf8').slice(0, 4000);
+    const f = (k) => (t.match(new RegExp('^' + k + ':\\s*(.+)$', 'm')) || [])[1]?.trim().replace(/^["']|["']$/g, '');
+    // office_role / office_team / office_dept / office_name in the task's own frontmatter win over any guess
+    return { name: f('name'), description: f('description'), role: f('office_role'), team: f('office_team'), dept: f('office_dept'), person: f('office_name') };
   } catch { return {}; }
 };
 
@@ -438,16 +440,24 @@ function pingOpenclaw() {
 
 // ---------- roster ----------
 const titleCase = (k) => String(k).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()).trim();
-const roleFor = (key, fallback) => ((CFG.roles || []).find(([k]) => key.includes(k)) || [])[1] || fallback;
-function deptFor(title, key) {
+// The id is the strong signal; the description is the fallback, so "run-weekly-thing" whose
+// description says "weekly SEO audit" still gets a sensible job title.
+const roleFor = (key, fallback, desc = '') => {
+  const roles = CFG.roles || [], d = String(desc).toLowerCase();
+  return (roles.find(([k]) => key.includes(k)) || roles.find(([k]) => d.includes(k)) || [])[1] || fallback;
+};
+function deptFor(title, key, desc = '') {
   const m = String(title || '').match(/^[^A-Za-z0-9]*([A-Za-z &]+?)\s*\|/);
   if (m) { const d = m[1].trim(); return CFG.deptAliases[d] || d; }
   for (const [re, d] of CFG.deptKeywords || []) if (new RegExp(re).test(key)) return d;
+  const low = String(desc).toLowerCase();
+  for (const [re, d] of CFG.deptKeywords || []) if (new RegExp(re).test(low)) return d;
   return CFG.defaultDepartment || 'Agents';
 }
 const BRIDGE_COLORS = ['#7C9CFF', '#F0A6CA', '#6FD3C7', '#FFB86B', '#B9A6FF', '#8FD98F', '#FF8FA3', '#79C0FF'];
 function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
 
+const officeLabels = () => (readJSON(path.join(HERE, 'office.json')) || {}).tasks || {};
 let openclawSeen = false;
 function buildStaffDefs(coworkTasks) {
   const defs = [];
@@ -462,14 +472,16 @@ function buildStaffDefs(coworkTasks) {
     const meta = skillMeta(path.join(dir, id, 'SKILL.md'));
     const title = s.title || meta.name || id;
     const tslug = slug(title);
-    defs.push({ id: 'claude-task:' + id, key: id, tool: 'claude', title: cleanTitle(title), dept: deptFor(title, id), desc: meta.description || '',
+    defs.push({ id: 'claude-task:' + id, key: id, tool: 'claude', title: cleanTitle(title), dept: deptFor(title, id, meta.description), desc: meta.description || '',
+      role: meta.role, team: meta.team, person: meta.person, ...(meta.dept ? { dept: meta.dept } : {}),
       schedule: s.cron ? cronHuman(s.cron) : 'Scheduled', cron: s.cron, enabled: s.enabled !== false, match: (x) => x.tool === 'claude' && (x.slug === id || x.slug === tslug) });
   }
   // Cowork scheduled tasks (live registry)
   for (const t of coworkTasks) {
     const meta = t.filePath ? skillMeta(t.filePath) : {};
     const title = t.displayName || meta.name || t.id;
-    defs.push({ id: 'cowork-task:' + t.id, key: t.id, tool: 'cowork', title: cleanTitle(title), dept: deptFor(title, t.id), desc: meta.description || '',
+    defs.push({ id: 'cowork-task:' + t.id, key: t.id, tool: 'cowork', title: cleanTitle(title), dept: meta.dept || deptFor(title, t.id, meta.description), desc: meta.description || '',
+      role: meta.role, team: meta.team, person: meta.person,
       schedule: t.cronExpression ? cronHuman(t.cronExpression) : 'Scheduled', cron: t.cronExpression, enabled: t.enabled !== false, lastRunReg: tsMs(t.lastRunAt),
       match: (x) => x.tool === 'cowork' && x.taskId === t.id });
   }
@@ -483,7 +495,7 @@ function buildStaffDefs(coworkTasks) {
       const name = get('name') || d, prompt = get('prompt'), rr = get('rrule');
       const info = rr ? rruleInfo(rr) : { human: 'Scheduled', cron: null };
       const head = prompt.slice(0, 60);
-      defs.push({ id: 'codex-auto:' + d, key: d, tool: 'codex', title: cleanTitle(name), dept: deptFor(name, d), desc: clip(prompt, 200),
+      defs.push({ id: 'codex-auto:' + d, key: d, tool: 'codex', title: cleanTitle(name), dept: deptFor(name, d, prompt), desc: clip(prompt, 200),
         schedule: info.human, cron: info.cron, enabled: get('status') !== 'PAUSED', match: (x) => x.tool === 'codex' && !!head && !!x.firstPrompt?.startsWith(head) });
     }
   } catch {}
@@ -499,6 +511,7 @@ const nameMap = new Map();
 function assignNames(list, pool, prefix) {
   const used = new Set([...nameMap.values()]);
   for (const e of [...list].sort((a, b) => a.id.localeCompare(b.id))) {
+    if (e.person) { e.name = e.person; continue; }
     if (CFG.nameOverrides[e.key]) { e.name = CFG.nameOverrides[e.key]; continue; }
     if (nameMap.has(prefix + e.id)) { e.name = nameMap.get(prefix + e.id); continue; }
     if (!pool.length) { e.name = titleCase(e.key).split(' ')[0] || 'Agent'; continue; }
@@ -575,6 +588,7 @@ async function refresh() {
   const [claude, codexAll, cw] = await Promise.all([collectClaude().catch(() => []), collectCodex().catch(() => []), collectCowork().catch(() => ({ sessions: [], tasks: [] })), loadDeskTitles().catch(() => {})]);
   openclawSeen = codexAll.some((x) => x.tool === 'openclaw');
   const sessions = [...claude, ...codexAll, ...cw.sessions, ...hermes.sessions.map((s) => ({ ...s, status: statusFrom(s._s) }))];
+  const LABELS = officeLabels();
   const defs = buildStaffDefs(cw.tasks);
   const aRuns = analyticsRuns(cw.sessions);
   const cb = analytics ? analytics.codeburn() : {};
@@ -588,10 +602,13 @@ async function refresh() {
     if (!d.enabled && status === 'sleeping') status = 'paused';
     const lastRun = Math.max(cur?.lastActive || 0, d.lastRunReg || 0) || null;
     const nextRun = d.enabled && d.cron ? cronNext(d.cron) : null;
-    const team = teamFor(d.key);
+    const lab = LABELS[d.key] || LABELS[d.id] || {};
+    const dept = lab.dept || d.dept;
+    const team = lab.team ? { name: lab.team } : d.team ? { name: d.team } : teamFor(d.key);
     const hist = aRuns.filter((x) => d.match(x));
     return {
-      id: d.id, key: d.key, kind: 'staff', tool: d.tool, dept: d.dept, team: team?.name || d.dept, role: d.role || roleFor(d.key, titleCase(d.key).slice(0, 34)), task: d.title, desc: d.desc,
+      id: d.id, key: d.key, kind: 'staff', tool: d.tool, dept, team: team?.name || dept,
+      role: lab.role || d.role || roleFor(d.key, titleCase(d.key).slice(0, 34), d.desc), person: lab.name || d.person, task: d.title, desc: d.desc,
       schedule: d.schedule, enabled: d.enabled, lastRun, nextRun, runs: runs.length, status,
       activity: status === 'sleeping' ? (nextRun ? 'Asleep until next shift' : 'On standby') : status === 'paused' ? 'On leave (paused)' : cur?.activity,
       session: cur ? { title: cur.title, project: cur.project, cwd: cur.cwd, model: cur.model, sid: cur.sid, lastActive: cur.lastActive } : null,

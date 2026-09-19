@@ -145,6 +145,70 @@
     "antigravity": {
       "label": "Antigravity",
       "color": "#9AA7D0"
+    },
+    "grok build": {
+      "label": "Grok Build",
+      "color": "#F3F3F3"
+    },
+    "grok": {
+      "label": "Grok",
+      "color": "#F3F3F3"
+    },
+    "grokbot": {
+      "label": "Grokbot",
+      "color": "#F3F3F3"
+    },
+    "codebuff": {
+      "label": "Codebuff",
+      "color": "#9AE6B4"
+    },
+    "codewhale": {
+      "label": "CodeWhale",
+      "color": "#7CC6FE"
+    },
+    "forge": {
+      "label": "Forge",
+      "color": "#FFA69E"
+    },
+    "kilocode": {
+      "label": "KiloCode",
+      "color": "#B5EAD7"
+    },
+    "mistral vibe": {
+      "label": "Mistral Vibe",
+      "color": "#FF7000"
+    },
+    "mux": {
+      "label": "Mux",
+      "color": "#C4B5FD"
+    },
+    "omp": {
+      "label": "OMP",
+      "color": "#A0AEC0"
+    },
+    "pi": {
+      "label": "Pi",
+      "color": "#F6AD55"
+    },
+    "zcode": {
+      "label": "ZCode",
+      "color": "#90CDF4"
+    },
+    "lingtai tui": {
+      "label": "LingTai TUI",
+      "color": "#FBB6CE"
+    },
+    "ibm bob": {
+      "label": "IBM Bob",
+      "color": "#79C0FF"
+    },
+    "open design": {
+      "label": "Open Design",
+      "color": "#F0A6CA"
+    },
+    "vercel ai gateway": {
+      "label": "Vercel AI Gateway",
+      "color": "#E2E8F0"
     }
   },
   "roles": [

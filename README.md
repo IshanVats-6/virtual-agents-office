@@ -58,18 +58,33 @@ Node 18+ is the only requirement. No install step, no build, no dependencies, no
 
 Everything is read **locally and read-only**. Nothing is uploaded and there is no telemetry.
 
-| | Tool | What you get |
-|---|---|---|
-| 🟠 | **Claude Code** | Live activity, scheduled tasks, sub-agent huddles, approvals waiting on you |
-| 🟢 | **Codex** | Live activity, automations and their schedules |
-| 🟣 | **Claude Cowork** | Scheduled tasks and their runs |
-| 🔴 | **OpenClaw** | The always-on agent, and whether its gateway is up |
-| 🟡 | **Hermes** (optional) | An always-on chat agent on a remote box, over SSH |
-| 🔵 | **Cursor, Copilot, Gemini CLI, Cline, Roo, Zed, Warp, OpenCode, Droid, Kiro, Qwen, Kimi, Goose and ~20 more** | Desks with cost, tokens and run history, through [codeburn](https://github.com/getagentseal/codeburn) |
+**Read directly, with live activity:** these agents move around the office in real time, show what they are doing right now, huddle with their sub-agents and flag approvals that are waiting on you.
 
-The last row is a bridge: if [codeburn](https://github.com/getagentseal/codeburn) is installed (`npm i -g codeburn`), every agent it can price gets a desk and a scorecard, without a live feed. Claude Code, Codex and Cowork are read directly, so they also get the live activity and movement.
+| Tool | What it gives you |
+|---|---|
+| **Claude Code** | Live activity, scheduled tasks, sub-agent huddles, approvals waiting on you, cost and work delivered |
+| **Codex** | Live activity, automations and their schedules, cost and work delivered |
+| **Claude Cowork** | Scheduled tasks and their run history |
+| **OpenClaw** | The always-on agent and whether its gateway is up |
+| **Hermes** (optional, over SSH) | An always-on chat agent running on a remote box |
 
-**Manus and other cloud-only agents** keep no local history, so they can't be shown yet.
+**Read through [codeburn](https://github.com/getagentseal/codeburn):** install it (`npm i -g codeburn`) and each of these gets a desk with a 30-day scorecard of runs, cost, tokens and cache hit. No live feed, since these tools do not keep one on disk in a readable shape.
+
+| Tool | | Tool | | Tool |
+|---|---|---|---|---|
+| **Cursor** | | **GitHub Copilot** | | **Gemini CLI** |
+| **Cursor Agent** | | **Cline** | | **Roo Code** |
+| **Grok Build** | | **Grokbot** | | **Devin** |
+| **Zed** | | **Warp** | | **OpenCode** |
+| **Droid** | | **Kiro** | | **Goose** |
+| **Qwen** | | **Kimi** | | **Crush** |
+| **KiloCode** | | **Codebuff** | | **CodeWhale** |
+| **Mistral Vibe** | | **Forge** | | **Antigravity** |
+| **IBM Bob** | | **LingTai TUI** | | **Mux** |
+| **OMP** | | **Pi** | | **ZCode** |
+| **Open Design** | | **Vercel AI Gateway** | | and whatever codeburn adds next |
+
+**Cloud-only agents** such as Manus keep no local history, so they cannot be shown yet. If your tool is missing, [open an issue](https://github.com/IshanVats-6/virtual-agents-office/issues/new) with where it stores its history.
 
 **Found nothing?** You get a demo office with a banner, so the first run still shows you what this is.
 
@@ -86,18 +101,31 @@ Scroll to zoom, drag to pan, `T` for the team directory, `1`–`9` to jump to a 
 
 ## How agents get names, roles and teams
 
-All of it is derived from the task itself, and all of it is overridable.
+You never have to configure anything. Every agent is labelled from what is already in your task, in this order:
 
-| From the task | Becomes |
-|---|---|
-| The task id, e.g. `weekly-seo-audit` | **Job title** via keywords: `seo` → SEO Specialist, `backup` → Backup Operator, `triage` → Support Agent. No match: the task name itself |
-| The same id | **Department** via keywords: `deploy\|release\|backup` → Engineering, `seo\|blog\|content` → Marketing, `invoice\|billing` → Finance |
-| A prefix in the title, e.g. `Marketing \| Daily blog` | That prefix wins as the department |
-| Your `teams` config, e.g. `{"name":"SEO Squad","match":"seo\|backlink"}` | **Team pod** on the floor. Without it, one pod per department |
-| A stable hash of the task id | **The person's name**, so an agent keeps the same name forever |
+| Priority | Source | Example |
+|---|---|---|
+| 1 | **`office.json`** in this folder, written by `--label` or by hand | `{"tasks":{"weekly-seo-audit":{"role":"SEO Auditor","team":"Growth","dept":"Marketing"}}}` |
+| 2 | **Frontmatter in your own task file** | `office_role: SEO Auditor` / `office_team: Growth` / `office_dept: Marketing` / `office_name: Ada` in the task's `SKILL.md` |
+| 3 | **Keywords in the task id** | `weekly-seo-audit` gives the job title SEO Specialist and the department Marketing |
+| 4 | **Keywords in the task description** | `run-weekly-thing` whose description says "weekly SEO audit of the marketing site" still lands in Marketing |
+| 5 | **A prefix in the task title** | `Marketing \| Daily blog` puts that agent in Marketing whatever the id says |
+| 6 | **Fallback** | The job title becomes the task name, and the department becomes "Agents" |
+
+The person's **name** comes from a stable hash of the task id, so an agent keeps the same name forever. Pin one with `office_name`, `office.json` or `nameOverrides` in your config.
+
+### Let an AI name them for you
 
 ```bash
-cp config.example.json config.json    # then override only what you want
+npx github:IshanVats-6/virtual-agents-office --label
+```
+
+It reads the title and description of every scheduled agent you have, asks an AI CLI you already have installed (Claude Code, Codex or Gemini, whichever it finds first) for a job title, department and team for each, and writes `office.json`. You can edit that file afterwards; it wins over every guess.
+
+No CLI installed? `--label --print` prints the prompt so you can paste it into any assistant and save the answer yourself.
+
+```bash
+cp config.example.json config.json    # or tune the guessing rules yourself
 ```
 
 `company`, `tagline`, `teams`, `roles`, `deptKeywords`, `departments`, `nameOverrides`, `port`, `analyticsDays`, `maxContractors`, `bridgeOtherTools`.
@@ -145,10 +173,23 @@ public/        the whole isometric office in one file, no build step
 
 Adding a source means returning sessions in the shape the collectors already use (`tool, sid, title, start, end, status, feed…`). `collectClaude` in `server.mjs` is the smallest example. Issues and PRs welcome.
 
+## Who builds this
+
+Hi, I'm **Ishan**. I write code for fun at hours that my calendar does not approve of, and this office is what happened when I wanted to see what my agents were doing while I slept. If it made you smile, that is the whole point.
+
+Things I am building:
+
+- **[HuddleOwl](https://huddleowl.com)** - an AI meeting coach that runs on your laptop. Nothing joins the call, and it is free.
+- **[Mero](https://withmero.com)** - the Cursor for product management. It finds the features your customers are already asking for, hidden inside your own tech stack.
+- **[virtual agents office](https://github.com/IshanVats-6/virtual-agents-office)** - this thing. Your agents, as an office you can walk around.
+- **[IV Consulting](https://ivconsulting.in/?source=virtual-agents-office)** - where I help companies put AI agents into production instead of into slide decks.
+
 ## Support this
 
 If it made you smile, [**star the repo**](https://github.com/IshanVats-6/virtual-agents-office) so other people find it, and tell me which tool you want supported next.
 
+Sponsoring pays for the late nights, the domains, and the tokens these agents happily burn. Any amount is a genuine kick.
+
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%99%A5-ff6b9a?style=for-the-badge)](https://github.com/sponsors/IshanVats-6)
 
-Built by [IV Consulting](https://ivconsulting.in/?source=virtual-agents-office), where we build AI agents that actually run in production. MIT licensed, so use it however you like.
+Built by [IV Consulting](https://ivconsulting.in/?source=virtual-agents-office). MIT licensed, so use it however you like.
